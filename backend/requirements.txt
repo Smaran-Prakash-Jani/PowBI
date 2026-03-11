@@ -3,7 +3,7 @@ uvicorn[standard]
 gunicorn
 python-multipart
 pandas
-google-generativeai
+google-genai
 pydantic
 python-dotenv
 pyjwt
