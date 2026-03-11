@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+*.local
+.vscode/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+powbi_memory.db
+temp_*
+brain/
+artifacts/
+.gemini/

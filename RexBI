@@ -1,0 +1,44 @@
+Full-Featured AntiGravity Code Prompt
+Role & Requirements: We first define the AI’s role as a senior full-stack developer focusing on enterprise UI/UX and performance. For example, the prompt can begin:
+“You are a senior React developer who specializes in performance optimization and accessibility
+. Create a responsive business dashboard page using a modern UI framework (such as Material-UI or Ant Design) that meets these requirements:
+
+Data Table with Virtualization: Render large datasets (10,000+ rows) efficiently using row virtualization
+.
+Lightweight Bundle: Ensure the bundle size remains small (e.g. under 50KB gzipped) by using code-splitting and tree shaking
+.
+Accessibility (ARIA Compliance): All interactive elements (tables, buttons, navigation) must be fully keyboard-navigable and ARIA-labeled
+.
+Error Handling: Implement robust error handling everywhere
+: network failures, invalid user input, and empty states should display friendly messages. Do not leave any unhandled exception.
+Testing: Provide comprehensive tests (Jest or similar) with ≥80% coverage
+ for all components and utility functions. Include edge cases.
+Documentation: Include clear comments/JSDoc for each component and function
+.
+Performance: Optimize render cycles (e.g. use React.memo, avoid unnecessary re-renders) and implement lazy loading for heavy components
+.
+Responsive & Business-Centric UI: Use a clean, uncluttered design (ample whitespace, limited color palette) and a layout that prioritizes key metrics at the top
+. Ensure mobile-first responsiveness – e.g. simplify layout on small screens, enable collapsible side navigation
+.
+Authentication & Security: If applicable, handle login/logout flows securely, and never expose sensitive data in error messages.
+Iterative Explanation: Provide a brief step-by-step reasoning of your approach before giving the final implementation
+.”
+Prompt Example (final assembly):
+
+sql
+Copy
+You are a senior full-stack developer building an enterprise-grade React dashboard. Create a responsive, mobile-friendly dashboard page using Material-UI (or Ant Design) according to these specifications:  
+- Data tables must support 10,000+ rows via virtualization (using React-Window or similar)【49†L156-L164】.  
+- The initial bundle size must remain small (e.g. <50KB gzipped) by using code splitting.  
+- Use semantic HTML and ARIA labels for all elements; ensure full keyboard navigation and accessibility【49†L156-L164】.  
+- Implement complete error handling: handle API/network errors (4xx, 5xx), validation errors, and display user-friendly messages【49†L269-L278】.  
+- Write unit tests (Jest) covering all components and utility functions with at least 80% coverage【49†L300-L309】.  
+- Include JSDoc comments on all functions and clear inline comments for non-trivial logic【49†L338-L344】.  
+- Optimize performance: use React.memo or PureComponent to avoid unnecessary renders and lazy-load heavy components【49†L156-L164】【49†L212-L217】.  
+- Design the UI for clarity: use a clean, minimal layout with strategic information hierarchy (KPIs at top, drilldowns below)【51†L68-L77】. Apply a professional color theme and typography.  
+- Ensure the design is fully responsive: on mobile, prioritize top KPIs and hide non-essential widgets using progressive disclosure【51†L115-L124】.  
+- Before coding, explain your approach step-by-step (architecture decisions, choice of libraries, component structure)【49†L233-L242】.  
+This prompt covers role assignment, technical constraints, UX design, and quality requirements, drawing on best practices (virtualization and ARIA
+, error handling and testing
+, progressive disclosure
+) to ensure a correct, fast, and professional result.

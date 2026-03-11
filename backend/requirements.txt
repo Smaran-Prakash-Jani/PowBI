@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pandas
+google-generativeai
+pydantic
+python-dotenv
+pyjwt
+passlib[bcrypt]
