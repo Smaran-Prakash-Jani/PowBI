@@ -14,8 +14,10 @@ PowBI is an enterprise-grade conversational BI tool that allows users to upload 
 To fix the **Network Error**, your backend must be live. 
 1. Create a "Web Service" on [Render.com](https://render.com).
 2. Connect this GitHub repository.
-3. **Build Command**: `pip install -r backend/requirements.txt`
-4. **Start Command**: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+3. **Advanced Settings (CRITICAL)**:
+   - Set **Root Directory** to `backend`.
+4. **Build Command**: `pip install -r requirements.txt`
+5. **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. **Environment Variables**:
    - `GEMINI_API_KEY`: `AIzaSyCOqNNpH5XPnB2xjQyu0Mfyp8T6t_Lk920` (Found in your local `.env`)
    - `GEMINI_MODEL`: `gemini-2.5-flash`
