@@ -112,6 +112,33 @@ export default function UploadZone({ onUpload, columns, repoFiles, onRepoLoad })
             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
               These files are pre-loaded in the project. Click to analyze them instantly!
             </p>
+            <button
+              onClick={() => {
+                const csv = "Date,Product,Category,Revenue,Units_Sold,Region\n2024-01-01,Alpha,Electronics,1200,5,North\n2024-01-02,Beta,Software,850,2,South\n2024-01-03,Gamma,Hardware,2100,10,East";
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', 'demo_template.csv');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }}
+              style={{
+                marginTop: '0.5rem',
+                padding: '0.6rem',
+                background: 'transparent',
+                border: '1px dashed var(--border-medium)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+            >
+              Get Sample CSV Template
+            </button>
           </div>
         )}
       </div>

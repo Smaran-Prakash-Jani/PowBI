@@ -22,26 +22,37 @@ def init_db():
 
 def load_csv_to_sqlite(file_path, table_name="uploaded_data"):
     """Converts CSV to SQLite for safe querying"""
+    seps = [',', ';', '\t', '|']
     encodings = ['utf-8', 'latin-1', 'cp1252']
     df = None
     last_err = ""
     
     for enc in encodings:
-        try:
-            # engine='python' is slower but much more robust to malformed/binary content
-            df = pd.read_csv(file_path, encoding=enc, engine='python', on_bad_lines='skip')
+        for sep in seps:
+            try:
+                # engine='python' is slower but much more robust to malformed/binary content
+                temp_df = pd.read_csv(file_path, encoding=enc, sep=sep, engine='python', on_bad_lines='skip')
+                if not temp_df.empty and len(temp_df.columns) >= 2:
+                    df = temp_df
+                    break
+                elif df is None or (not temp_df.empty and len(temp_df.columns) > len(df.columns)):
+                    df = temp_df # keep best attempt
+            except Exception as e:
+                last_err = str(e)
+                continue
+        if df is not None and len(df.columns) >= 2:
             break
-        except Exception as e:
-            last_err = str(e)
-            continue
             
     if df is None:
         raise ValueError(f"Failed to parse CSV with standard encodings: {last_err}")
 
     if df.empty:
-        raise ValueError("Uploaded CSV is empty.")
+        raise ValueError("Uploaded CSV is empty or parsing yielded no data.")
         
     if len(df.columns) < 2:
+        # One last check: did we get anything at all?
+        if len(df.columns) == 1:
+             raise ValueError("CSV structure not recognized. Only 1 column found. Please check your file delimiters (headers should be comma-separated).")
         raise ValueError("CSV must contain at least 2 columns for meaningful analysis.")
         
     # drop unnamed columns instead of erroring
@@ -117,16 +128,21 @@ def generate_summary(df):
             clean_series = pd.to_numeric(df[col], errors='coerce').dropna()
             if clean_series.empty:
                 continue
-                
+            
+            # Basic stats
+            total_sum = float(clean_series.sum())
+            avg_val = float(clean_series.mean())
+            
+            # formatting to avoid scientific notation
             summary["kpis"].append({
                 "label": col.replace("_", " ").title(),
-                "value": round(float(clean_series.sum()), 2),
-                "mean": round(float(clean_series.mean()), 2),
+                "value": round(total_sum, 2) if abs(total_sum) < 1e12 else "Large Value",
+                "mean": round(avg_val, 2),
                 "min": round(float(clean_series.min()), 2),
                 "max": round(float(clean_series.max()), 2),
             })
         except Exception as e:
-            print(f"Skipping KPI for {col}: {e}")
+            logger.warning(f"Skipping KPI for {col}: {e}")
             continue
 
     return summary
