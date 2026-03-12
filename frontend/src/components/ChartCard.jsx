@@ -11,9 +11,17 @@ const CHART_COLORS = [
 
 export default function ChartCard({ config, data }) {
   const [activeType, setActiveType] = useState(config?.chart_type || 'bar');
+  const [isDark, setIsDark] = useState(document.body.classList.contains('dark'));
 
   useEffect(() => {
     if (config?.chart_type) setActiveType(config.chart_type);
+    
+    // Theme observer
+    const observer = new MutationObserver(() => {
+      setIsDark(document.body.classList.contains('dark'));
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
   }, [config]);
 
   const plotData = useMemo(() => {
@@ -34,7 +42,7 @@ export default function ChartCard({ config, data }) {
         textposition: 'outside',
         hoverinfo: 'label+value+percent',
         hole: 0.45,
-        textfont: { color: '#64748b', size: 12, family: 'Inter, sans-serif' },
+        textfont: { color: isDark ? '#94a3b8' : '#64748b', size: 12, family: 'Inter, sans-serif' },
         automargin: true,
       }];
     }
@@ -46,10 +54,10 @@ export default function ChartCard({ config, data }) {
       mode: activeType === 'scatter' ? 'markers' : activeType === 'line' ? 'lines+markers' : undefined,
       marker: {
         color: type === 'bar'
-          ? CHART_COLORS.slice(0, xVals.length)
+          ? xVals.map((_, i) => CHART_COLORS[i % CHART_COLORS.length])
           : CHART_COLORS[0],
         size: type === 'scatter' ? 10 : undefined,
-        line: { width: 0 },
+        line: { width: 0.5, color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' },
       },
       line: type === 'line' ? {
         color: CHART_COLORS[0],
@@ -59,10 +67,9 @@ export default function ChartCard({ config, data }) {
       fill: activeType === 'line' ? 'tozeroy' : undefined,
       fillcolor: activeType === 'line' ? 'rgba(99, 102, 241, 0.08)' : undefined,
     }];
-  }, [config, data, activeType]);
+  }, [config, data, activeType, isDark]);
 
   const layout = useMemo(() => {
-    const isDark = document.body.classList.contains('dark');
     const textColor = isDark ? '#94a3b8' : '#64748b';
     const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
     
