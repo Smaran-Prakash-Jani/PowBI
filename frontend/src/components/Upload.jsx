@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { UploadCloud, CheckCircle2 } from 'lucide-react';
+import { UploadCloud, CheckCircle2, Database } from 'lucide-react';
 
 export default function UploadZone({ onUpload, columns, repoFiles, onRepoLoad }) {
   const [dragOver, setDragOver] = useState(false);
@@ -58,47 +58,59 @@ export default function UploadZone({ onUpload, columns, repoFiles, onRepoLoad })
 
         {repoFiles?.length > 0 && (
           <div className="repo-files-card" style={{ 
-            background: 'var(--bg-card)', 
+            background: 'rgba(255, 255, 255, 0.03)', 
             border: '1px solid var(--border-medium)', 
             borderRadius: 'var(--radius-lg)', 
             padding: '1.25rem',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.75rem'
+            gap: '1rem',
+            backdropFilter: 'blur(10px)'
           }}>
-            <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckCircle2 size={16} /> Repository Files
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '160px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h4 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Database size={16} /> Repository Files
+              </h4>
+              <span className="badge-pulsing" style={{ fontSize: '0.7rem', background: 'var(--accent-primary)', color: 'white', padding: '2px 8px', borderRadius: '10px' }}>
+                Live
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
               {repoFiles.map(file => (
-                <button
+                <motion.button
                   key={file}
                   onClick={() => {
                     setFileName(file);
                     onRepoLoad(file);
                   }}
+                  whileHover={{ x: 4, background: 'var(--bg-hover)' }}
                   className="repo-file-btn"
                   style={{
-                    padding: '0.6rem 0.8rem',
-                    background: 'var(--bg-hover)',
+                    padding: '0.75rem 0.9rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid var(--border-light)',
                     borderRadius: 'var(--radius-md)',
                     textAlign: 'left',
-                    fontSize: '0.85rem',
+                    fontSize: '0.825rem',
                     color: 'var(--text-primary)',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem'
                   }}
                 >
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-primary)' }} />
                   {file}
-                </button>
+                </motion.button>
               ))}
             </div>
-            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Load CSVs directly from the project repository.
+            <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+              These files are pre-loaded in the project. Click to analyze them instantly!
             </p>
           </div>
         )}

@@ -22,10 +22,20 @@ def init_db():
 
 def load_csv_to_sqlite(file_path, table_name="uploaded_data"):
     """Converts CSV to SQLite for safe querying"""
-    try:
-        df = pd.read_csv(file_path)
-    except Exception as e:
-        raise ValueError(f"Failed to parse CSV: {str(e)}")
+    encodings = ['utf-8', 'latin-1', 'cp1252']
+    df = None
+    last_err = ""
+    
+    for enc in encodings:
+        try:
+            df = pd.read_csv(file_path, encoding=enc)
+            break
+        except Exception as e:
+            last_err = str(e)
+            continue
+            
+    if df is None:
+        raise ValueError(f"Failed to parse CSV with standard encodings: {last_err}")
 
     if df.empty:
         raise ValueError("Uploaded CSV is empty.")

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Loader2, Sparkles } from 'lucide-react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || '/api';
 
 export default function ChatPanel({ columns, token }) {
   const [open, setOpen] = useState(false);
