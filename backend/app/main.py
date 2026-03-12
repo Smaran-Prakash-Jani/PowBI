@@ -9,6 +9,7 @@ from app.query_builder import build_sql_from_json
 import traceback
 import logging
 import json
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("powbi")
@@ -90,6 +91,45 @@ async def get_summary(user=Depends(get_current_user)):
     if not data_summary:
         return {"message": "No data uploaded yet", "summary": {}, "columns": []}
     return {"summary": data_summary, "columns": current_columns}
+
+
+@app.get("/data/files")
+async def list_repo_files(user=Depends(get_current_user)):
+    """List CSV files available in the backend/data directory"""
+    data_dir = "data"
+    if not os.path.exists(data_dir):
+        return {"files": []}
+    files = [f for f in os.listdir(data_dir) if f.endswith(".csv")]
+    return {"files": files}
+
+
+@app.post("/data/load")
+async def load_repo_file(filename: str, user=Depends(get_current_user)):
+    """Load a specific CSV file from the backend/data directory"""
+    global current_columns, data_summary
+    data_dir = "data"
+    filepath = os.path.join(data_dir, filename)
+    
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail="File not found in repository")
+        
+    try:
+        cols, count, summary = load_csv_to_sqlite(filepath)
+        current_columns = cols
+        data_summary = summary
+        logger.info(f"User {user['sub']} loaded repo file {filename} with {count} rows.")
+        return {
+            "message": f"Successfully loaded {filename}",
+            "columns": cols,
+            "row_count": count,
+            "summary": summary,
+        }
+    except ValueError as ve:
+        logger.error(f"Repo file load failed: {str(ve)}")
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Repo file load error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/query")

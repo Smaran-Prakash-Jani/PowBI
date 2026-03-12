@@ -27,6 +27,7 @@ export default function Dashboard({ user, token, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [queryHistory, setQueryHistory] = useState([]);
+  const [repoFiles, setRepoFiles] = useState([]);
 
   // Fetch summary and history on mount to restore state
   useEffect(() => {
@@ -52,6 +53,15 @@ export default function Dashboard({ user, token, onLogout }) {
         setQueryHistory(res.data.history);
       }
     }).catch(() => {});
+
+    // Fetch repo files
+    axios.get(`${API}/data/files`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.data.files) {
+        setRepoFiles(res.data.files);
+      }
+    }).catch(() => {});
   }, [token]);
 
   // File upload handler
@@ -73,6 +83,22 @@ export default function Dashboard({ user, token, onLogout }) {
       setTimeout(() => setStatus(''), 3000);
     } catch (err) {
       setStatus('Upload failed: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  // Repo load handler
+  const handleRepoLoad = async (filename) => {
+    try {
+      setStatus(`Loading ${filename}...`);
+      const res = await axios.post(`${API}/data/load?filename=${filename}`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setColumns(res.data.columns);
+      setSummary(res.data.summary);
+      setStatus('Data loaded from repository!');
+      setTimeout(() => setStatus(''), 3000);
+    } catch (err) {
+      setStatus('Repo load failed: ' + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -163,7 +189,12 @@ export default function Dashboard({ user, token, onLogout }) {
               transition={{ duration: 0.3 }}
             >
               {/* Inline Upload */}
-              <UploadZone onUpload={handleUpload} columns={columns} />
+              <UploadZone 
+                onUpload={handleUpload} 
+                columns={columns} 
+                repoFiles={repoFiles} 
+                onRepoLoad={handleRepoLoad} 
+              />
 
               {/* KPI Cards */}
               {summary && <KPICards summary={summary} />}

@@ -42,12 +42,18 @@ def load_csv_to_sqlite(file_path, table_name="uploaded_data"):
     if len(df.columns) < 2:
         raise ValueError("CSV must contain at least 2 columns for meaningful analysis.")
 
-    # Sanitize column names
-    df.columns = [str(c).lower().replace(" ", "_").replace("-", "_") for c in df.columns]
-
-    # Check for duplicate column names
-    if len(df.columns) != len(set(df.columns)):
-        raise ValueError("CSV contains duplicate column names.")
+    # Sanitize column names and make them unique
+    new_cols = []
+    seen = {}
+    for c in df.columns:
+        clean = str(c).lower().replace(" ", "_").replace("-", "_")
+        if clean in seen:
+            seen[clean] += 1
+            clean = f"{clean}_{seen[clean]}"
+        else:
+            seen[clean] = 0
+        new_cols.append(clean)
+    df.columns = new_cols
 
     conn = init_db()
     df.to_sql(table_name, conn, if_exists="replace", index=False)
