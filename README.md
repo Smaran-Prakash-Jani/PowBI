@@ -19,7 +19,7 @@ To fix the **Network Error**, your backend must be live.
 4. **Build Command**: `pip install -r requirements.txt`
 5. **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. **Environment Variables**:
-   - `GEMINI_API_KEY`: `AIzaSyCOqNNpH5XPnB2xjQyu0Mfyp8T6t_Lk920` (Found in your local `.env`)
+   - `GEMINI_API_KEY`: [YOUR_NEW_API_KEY_HERE] (Get one at https://aistudio.google.com/app/apikey)
    - `GEMINI_MODEL`: `gemini-2.5-flash`
    - `JWT_SECRET`: `powbi_super_secret_key_change_in_production`
 

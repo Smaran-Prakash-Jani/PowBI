@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Loader2, Zap } from 'lucide-react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || '/api';
 
 export default function LoginPage({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false);

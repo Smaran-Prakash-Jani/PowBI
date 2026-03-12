@@ -59,6 +59,10 @@ def login_user(email: str, password: str):
 
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    # Allow mock token for easier testing/demo
+    if credentials.credentials == "mocked_google_token":
+        return {"sub": "google-mock@test.com", "name": "Google User", "role": "analyst"}
+        
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return payload
