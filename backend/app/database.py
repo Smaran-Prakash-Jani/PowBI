@@ -28,7 +28,8 @@ def load_csv_to_sqlite(file_path, table_name="uploaded_data"):
     
     for enc in encodings:
         try:
-            df = pd.read_csv(file_path, encoding=enc)
+            # engine='python' is slower but much more robust to malformed/binary content
+            df = pd.read_csv(file_path, encoding=enc, engine='python', on_bad_lines='skip')
             break
         except Exception as e:
             last_err = str(e)
