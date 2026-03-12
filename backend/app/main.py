@@ -78,9 +78,10 @@ async def upload_file(file: UploadFile = File(...), user=Depends(get_current_use
             "summary": summary,
         }
     except ValueError as ve:
+        logger.error(f"Upload validation failed: {str(ve)}")
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        traceback.print_exc()
+        logger.error(f"Upload error: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

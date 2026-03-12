@@ -33,10 +33,14 @@ def load_csv_to_sqlite(file_path, table_name="uploaded_data"):
     if len(df.columns) < 2:
         raise ValueError("CSV must contain at least 2 columns for meaningful analysis.")
         
-    # Check for missing headers (pandas usually names them Unnamed: X)
-    for col in df.columns:
-        if str(col).startswith("Unnamed:"):
-            raise ValueError(f"CSV contains missing or unnamed headers (e.g., '{col}'). Please fix your file.")
+    # drop unnamed columns instead of erroring
+    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    
+    if df.empty:
+        raise ValueError("Uploaded CSV is empty after removing unnamed columns.")
+        
+    if len(df.columns) < 2:
+        raise ValueError("CSV must contain at least 2 columns for meaningful analysis.")
 
     # Sanitize column names
     df.columns = [str(c).lower().replace(" ", "_").replace("-", "_") for c in df.columns]
@@ -91,13 +95,22 @@ def generate_summary(df):
         valid_kpi_cols.append(col)
 
     for col in valid_kpi_cols[:4]:  # Top 4 sensible numeric KPIs
-        summary["kpis"].append({
-            "label": col.replace("_", " ").title(),
-            "value": round(float(df[col].sum()), 2),
-            "mean": round(float(df[col].mean()), 2),
-            "min": round(float(df[col].min()), 2),
-            "max": round(float(df[col].max()), 2),
-        })
+        try:
+            # Drop NaN and ensure numeric
+            clean_series = pd.to_numeric(df[col], errors='coerce').dropna()
+            if clean_series.empty:
+                continue
+                
+            summary["kpis"].append({
+                "label": col.replace("_", " ").title(),
+                "value": round(float(clean_series.sum()), 2),
+                "mean": round(float(clean_series.mean()), 2),
+                "min": round(float(clean_series.min()), 2),
+                "max": round(float(clean_series.max()), 2),
+            })
+        except Exception as e:
+            print(f"Skipping KPI for {col}: {e}")
+            continue
 
     return summary
 

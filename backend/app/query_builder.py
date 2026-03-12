@@ -42,7 +42,20 @@ def build_sql_from_json(query_obj: StructuredQuery, allowed_columns: List[str], 
             if filter_config.column.lower() not in allowed_cols_set:
                 raise ValueError(f"Unauthorized or unknown column in WHERE: {filter_config.column}")
             
+            # Map LLM keywords to SQL operators
+            OPERATOR_MAP = {
+                'EQ': '=',
+                'NE': '!=',
+                'GT': '>',
+                'LT': '<',
+                'GE': '>=',
+                'LE': '<=',
+                'EQUALS': '=',
+                'NOT_EQUALS': '!=',
+            }
             op = filter_config.operator.upper()
+            op = OPERATOR_MAP.get(op, op)
+            
             allowed_ops = {'=', '!=', '>', '<', '>=', '<=', 'IN', 'LIKE'}
             if op not in allowed_ops:
                 raise ValueError(f"Unsupported operator: {op}")
